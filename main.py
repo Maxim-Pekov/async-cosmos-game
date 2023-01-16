@@ -20,12 +20,18 @@ async def blink(canvas, row, column, symbol='*'):
 
 def draw(canvas):
     row, column = (5, 20)
-    star = blink(canvas, row, column, symbol='*')
-    curses.curs_set(False)
-    canvas.border()
+    set_of_stars = []
+    for count in range(5):
+        column += 5
+        star = blink(canvas, row, column, symbol='*')
+        set_of_stars.append(star)
+
+        curses.curs_set(False)
+        canvas.border()
     while True:
-        star.send(None)
-        canvas.refresh()
+        for corutin in set_of_stars.copy():
+            corutin.send(None)
+            canvas.refresh()
     time.sleep(3)
 
 
