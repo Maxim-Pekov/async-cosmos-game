@@ -6,6 +6,8 @@ import fire_animation, curses_tools
 
 
 TIC_TIMEOUT = 0.1
+BORDER_WIDTH = 2
+ROCKET_HEIGHT = 9
 
 
 with open("animations/rocket_frame_1.txt", "r") as my_file:
@@ -41,8 +43,8 @@ def draw_stars(canvas, window_height, window_width):
     set_of_stars = []
     stars_symbols = ['*', '+', ':', '.']
     for _ in range(50):
-        row = random.randint(2, window_height - 2)
-        column = random.randint(2, window_width - 2)
+        row = random.randint(BORDER_WIDTH, window_height - BORDER_WIDTH)
+        column = random.randint(BORDER_WIDTH, window_width - BORDER_WIDTH)
         stars_symbol = random.choice(stars_symbols)
         star = blink(canvas, row, column, symbol=stars_symbol)
         set_of_stars.append(star)
@@ -88,11 +90,17 @@ async def animate_spaceship(canvas, row, col, window_height, window_width):
 
 def draw(canvas):
     window_height, window_width = (curses.LINES, curses.COLS)
-    row = window_height - 11
-    col = (window_width // 2) - 2
+    row = window_height - ROCKET_HEIGHT - BORDER_WIDTH
+    col = (window_width // 2) - BORDER_WIDTH
 
     coroutines = draw_stars(canvas, window_height, window_width)
-    coroutines.append(fire_animation.fire(canvas, start_row=window_height - 2, start_column=window_width // 2))
+    coroutines.append(
+        fire_animation.fire(
+            canvas,
+            start_row=window_height - BORDER_WIDTH,
+            start_column=window_width // 2
+        )
+    )
     coroutines.append(animate_spaceship(canvas, row, col, window_height, window_width))
 
 
