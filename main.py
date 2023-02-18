@@ -10,12 +10,6 @@ BORDER_WIDTH = 2
 ROCKET_HEIGHT = 9
 
 
-with open("animations/rocket_frame_1.txt", "r") as my_file:
-    frame1 = my_file.read()
-with open("animations/rocket_frame_2.txt", "r") as my_file:
-    frame2 = my_file.read()
-
-
 async def blink(canvas, row, column, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
@@ -52,6 +46,10 @@ def draw_stars(canvas, window_height, window_width):
 
 
 async def animate_spaceship(canvas, row, col, window_height, window_width):
+    with open("animations/rocket_frame_1.txt", "r") as my_file:
+        frame1 = my_file.read()
+    with open("animations/rocket_frame_2.txt", "r") as my_file:
+        frame2 = my_file.read()
 
     while True:
         rows_direction, columns_direction, space_pressed = curses_tools.read_controls(
@@ -119,9 +117,12 @@ def draw(canvas):
             break
 
 
-if __name__ == '__main__':
+def main():
+
     curses.update_lines_cols()
     curses.wrapper(draw)
 
+if __name__ == '__main__':
+    main()
 
 
