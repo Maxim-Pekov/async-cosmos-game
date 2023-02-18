@@ -5,6 +5,9 @@ import random
 import fire_animation, curses_tools
 
 
+TIC_TIMEOUT = 0.1
+
+
 with open("animations/rocket_frame_1.txt", "r") as my_file:
     frame1 = my_file.read()
 with open("animations/rocket_frame_2.txt", "r") as my_file:
@@ -14,20 +17,24 @@ with open("animations/rocket_frame_2.txt", "r") as my_file:
 async def blink(canvas, row, column, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        await asyncio.sleep(0)
-        time.sleep(0.002)
+        for _ in range(20):
+            await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        await asyncio.sleep(0)
-        time.sleep(0.0003)
+        for _ in range(3):
+            await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-        await asyncio.sleep(0)
-        time.sleep(0.0005)
+        for _ in range(5):
+            await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        await asyncio.sleep(0)
-        time.sleep(0.0003)
+        for _ in range(3):
+            await asyncio.sleep(0)
+
+        x = random.randint(1, 10)
+        for _ in range(x):
+            await asyncio.sleep(0)
 
 
 def draw_stars(canvas, window_height, window_width):
