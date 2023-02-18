@@ -6,11 +6,9 @@ import fire_animation, curses_tools
 
 
 with open("animations/rocket_frame_1.txt", "r") as my_file:
-    file_contents = my_file.read()
+    frame1 = my_file.read()
 with open("animations/rocket_frame_2.txt", "r") as my_file:
-    file_contents2 = my_file.read()
-frame1 = f'''{file_contents}'''
-frame2 = f'''{file_contents2}'''
+    frame2 = my_file.read()
 
 
 async def blink(canvas, row, column, symbol='*'):
