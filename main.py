@@ -8,6 +8,7 @@ import fire_animation, curses_tools
 TIC_TIMEOUT = 0.1
 BORDER_WIDTH = 2
 ROCKET_HEIGHT = 9
+ROCKET_WIDTH = 5
 
 
 async def blink(canvas, row, column, symbol='*'):
@@ -57,14 +58,10 @@ async def animate_spaceship(canvas, row, col, window_height, window_width):
         row += rows_direction
         col += columns_direction
 
-        if col <= -1:
-            col = -1
-        elif col >= window_width - 4:
-            col = window_width - 4
-        if row <= 0:
-            row = 0
-        elif row >= window_height - 2:
-            row = window_height - 2
+        row = max(1, row)
+        col = max(1, col)
+        row = min(row, window_height - ROCKET_HEIGHT / 2)
+        col = min(col, window_width - ROCKET_WIDTH - BORDER_WIDTH / 2)
 
         curses_tools.draw_frame(
             canvas, row, col, frame1
@@ -113,8 +110,6 @@ def draw(canvas):
             canvas.nodelay(True)
             canvas.refresh()
             time.sleep(0.001)
-        if len(coroutines) == 0:
-            break
 
 
 def main():
