@@ -12,27 +12,25 @@ ROCKET_HEIGHT = 9
 ROCKET_WIDTH = 5
 
 
-async def blink(canvas, row, column, symbol='*'):
+async def blink(canvas, row, column, offset_tics, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        for _ in range(20):
+        for _ in range(offset_tics * 20):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        for _ in range(3):
+        for _ in range(offset_tics * 3):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-        for _ in range(5):
+        for _ in range(offset_tics * 5):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        for _ in range(3):
+        for _ in range(offset_tics * 3):
             await asyncio.sleep(0)
 
-        x = random.randint(1, 10)
-        for _ in range(x):
-            await asyncio.sleep(0)
+
 
 
 def draw_stars(canvas, window_height, window_width):
@@ -42,7 +40,8 @@ def draw_stars(canvas, window_height, window_width):
         row = random.randint(BORDER_WIDTH, window_height - BORDER_WIDTH)
         column = random.randint(BORDER_WIDTH, window_width - BORDER_WIDTH)
         stars_symbol = random.choice(stars_symbols)
-        star = blink(canvas, row, column, symbol=stars_symbol)
+        offset_tics = random.randint(1, 10)
+        star = blink(canvas, row, column, offset_tics, symbol=stars_symbol)
         set_of_stars.append(star)
     return set_of_stars
 
