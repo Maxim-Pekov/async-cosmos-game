@@ -74,7 +74,7 @@ async def animate_spaceship(canvas, row, col, window_height, window_width):
 
 
 def draw(canvas):
-    window_height, window_width = (curses.LINES, curses.COLS)
+    window_height, window_width = canvas.getmaxyx()
     row = window_height - ROCKET_HEIGHT - BORDER_WIDTH
     col = (window_width // 2) - BORDER_WIDTH
 
