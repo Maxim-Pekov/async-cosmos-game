@@ -36,8 +36,6 @@ async def blink(canvas, row, column, offset_tics, symbol='*'):
             await asyncio.sleep(0)
 
 
-
-
 def draw_stars(canvas, window_height, window_width):
     set_of_stars = []
     stars_symbols = ['*', '+', ':', '.']
@@ -69,7 +67,8 @@ async def animate_spaceship(canvas, window_height, window_width):
         rocket_row_position = max(BORDER_WIDTH / 2, rocket_row_position)
         rocket_col_position = max(BORDER_WIDTH / 2, rocket_col_position)
         rocket_row_position = min(
-            rocket_row_position, window_height - rocket_height / 2
+            rocket_row_position,
+            window_height - rocket_height - BORDER_WIDTH / 2
         )
         rocket_col_position = min(
             rocket_col_position, window_width - rocket_width - BORDER_WIDTH / 2
@@ -89,6 +88,7 @@ async def animate_spaceship(canvas, window_height, window_width):
 def draw(canvas):
     curses.curs_set(False)
     canvas.nodelay(True)
+    canvas.border()
 
     window_height, window_width = canvas.getmaxyx()
 
@@ -109,7 +109,6 @@ def draw(canvas):
             except StopIteration:
                 coroutines.remove(coroutine)
             time.sleep(0.001)
-        canvas.border()
         canvas.refresh()
 
 
