@@ -74,6 +74,9 @@ async def animate_spaceship(canvas, row, col, window_height, window_width):
 
 
 def draw(canvas):
+    curses.curs_set(False)
+    canvas.nodelay(True)
+
     window_height, window_width = canvas.getmaxyx()
     row = window_height - ROCKET_HEIGHT - BORDER_WIDTH
     col = (window_width // 2) - BORDER_WIDTH
@@ -95,15 +98,15 @@ def draw(canvas):
                 coroutine.send(None)
             except StopIteration:
                 coroutines.remove(coroutine)
-            curses.curs_set(False)
-            canvas.border()
-            canvas.nodelay(True)
-            canvas.refresh()
             time.sleep(0.001)
+        canvas.border()
+        canvas.refresh()
+
+
+
 
 
 def main():
-
     curses.update_lines_cols()
     curses.wrapper(draw)
 
