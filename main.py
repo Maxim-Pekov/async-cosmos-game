@@ -1,4 +1,5 @@
 import asyncio
+from itertools import cycle
 import time
 import curses
 import random
@@ -52,7 +53,7 @@ async def animate_spaceship(canvas, row, col, window_height, window_width):
     with open("animations/rocket_frame_2.txt", "r") as my_file:
         frame2 = my_file.read()
 
-    while True:
+    for rocket_frame in cycle([frame1, frame2]):
         rows_direction, columns_direction, space_pressed = curses_tools.read_controls(
             canvas)
         row += rows_direction
@@ -63,23 +64,12 @@ async def animate_spaceship(canvas, row, col, window_height, window_width):
         row = min(row, window_height - ROCKET_HEIGHT / 2)
         col = min(col, window_width - ROCKET_WIDTH - BORDER_WIDTH / 2)
 
-        curses_tools.draw_frame(
-            canvas, row, col, frame1
-        )
+        curses_tools.draw_frame(canvas, row, col, rocket_frame)
         await asyncio.sleep(0)
         curses_tools.draw_frame(
             canvas, row,
             col,
-            frame1, negative=True
-        )
-
-        curses_tools.draw_frame(
-            canvas, row, col, frame2
-        )
-        await asyncio.sleep(0)
-        curses_tools.draw_frame(
-            canvas, row, col,
-            frame2, negative=True
+            rocket_frame, negative=True
         )
 
 
