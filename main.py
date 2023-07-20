@@ -7,6 +7,7 @@ import fire_animation, curses_tools
 
 from space_garbage import fly_garbage, get_random_frame
 from itertools import cycle
+from physics import update_speed
 
 
 coroutines = []
@@ -59,6 +60,7 @@ async def animate_spaceship(canvas, window_height, window_width):
         frame1 = my_file.read()
     with open("animations/rocket_frame_2.txt", "r") as my_file:
         frame2 = my_file.read()
+    row_speed = column_speed = 0
     rocket_height, rocket_width = curses_tools.get_frame_size(frame1)
     rocket_row_position = window_height - rocket_height - BORDER_WIDTH
     rocket_col_position = (window_width // 2) - BORDER_WIDTH
@@ -66,8 +68,12 @@ async def animate_spaceship(canvas, window_height, window_width):
     for rocket_frame in cycle([frame1, frame2]):
         rows_direction, columns_direction, space_pressed = curses_tools.read_controls(
             canvas)
-        rocket_row_position += rows_direction
-        rocket_col_position += columns_direction
+
+        row_speed, column_speed = update_speed(
+            row_speed, column_speed, rows_direction, columns_direction
+        )
+        rocket_row_position += row_speed
+        rocket_col_position += column_speed
 
         rocket_row_position = max(BORDER_WIDTH / 2, rocket_row_position)
         rocket_col_position = max(BORDER_WIDTH / 2, rocket_col_position)
