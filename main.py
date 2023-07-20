@@ -18,27 +18,27 @@ NUMBER_OF_STARS = 50
 FLICKER_BEAT = (20, 3, 5, 3)
 
 
+async def sleep(tics=1):
+    for _ in range(tics):
+        await asyncio.sleep(0)
+
+
 async def blink(canvas, row, column, offset_tics, symbol='*'):
 
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        for _ in range(FLICKER_BEAT[0]):
-            await asyncio.sleep(0)
+        await sleep(FLICKER_BEAT[0])
 
         canvas.addstr(row, column, symbol)
-        for _ in range(FLICKER_BEAT[1]):
-            await asyncio.sleep(0)
+        await sleep(FLICKER_BEAT[1])
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-        for _ in range(FLICKER_BEAT[2]):
-            await asyncio.sleep(0)
+        await sleep(FLICKER_BEAT[2])
 
         canvas.addstr(row, column, symbol)
-        for _ in range(FLICKER_BEAT[3]):
-            await asyncio.sleep(0)
+        await sleep(FLICKER_BEAT[3])
 
-        for _ in range(offset_tics):
-            await asyncio.sleep(0)
+        await sleep(offset_tics)
 
 
 def draw_stars(canvas, window_height, window_width):
@@ -82,8 +82,7 @@ async def animate_spaceship(canvas, window_height, window_width):
         curses_tools.draw_frame(
             canvas, rocket_row_position, rocket_col_position, rocket_frame
         )
-        for _ in range(2):
-            await asyncio.sleep(0)
+        await sleep(2)
         curses_tools.draw_frame(
             canvas, rocket_row_position, rocket_col_position, rocket_frame,
             negative=True
@@ -99,9 +98,8 @@ async def fill_orbit_with_garbage(canvas, window_height, window_width):
         frame = get_random_frame(random_frame)
         column = random.randint(BORDER_WIDTH, window_width - BORDER_WIDTH)
         coroutines.append(fly_garbage(canvas, column, frame))
-        for _ in range(offset_tics):
-            await asyncio.sleep(0)
-        await asyncio.sleep(0)
+        await sleep(offset_tics)
+
 
 def draw(canvas):
     curses.curs_set(False)
