@@ -1,13 +1,18 @@
+import os
 import time
 import curses
 import random
 import asyncio
 import fire_animation, curses_tools
 
+from space_garbage import fly_garbage, get_random_frame
 from itertools import cycle
 
 
+coroutines = []
+
 TIC_TIMEOUT = 5
+TIC_GARBAGE_TIMEOUT = 25
 BORDER_WIDTH = 2
 NUMBER_OF_STARS = 50
 FLICKER_BEAT = (20, 3, 5, 3)
@@ -84,11 +89,24 @@ async def animate_spaceship(canvas, window_height, window_width):
             negative=True
         )
 
+async def fill_orbit_with_garbage(canvas, window_height, window_width):
+    global coroutines
+    frames = os.listdir("animations/garbages")
+    offset_tics = random.randint(10, TIC_GARBAGE_TIMEOUT)
+    while True:
+
+        random_frame = random.choice(frames)
+        frame = get_random_frame(random_frame)
+        column = random.randint(BORDER_WIDTH, window_width - BORDER_WIDTH)
+        coroutines.append(fly_garbage(canvas, column, frame))
+        for _ in range(offset_tics):
+            await asyncio.sleep(0)
+        await asyncio.sleep(0)
 
 def draw(canvas):
     curses.curs_set(False)
     canvas.nodelay(True)
-    canvas.border()
+    global coroutines
 
     window_height, window_width = canvas.getmaxyx()
 
@@ -101,8 +119,11 @@ def draw(canvas):
         )
     )
     coroutines.append(animate_spaceship(canvas, window_height, window_width))
+    coroutines.append(fill_orbit_with_garbage(canvas, window_height, window_width))
 
     while True:
+        canvas.border()
+
         for coroutine in coroutines.copy():
             try:
                 coroutine.send(None)
