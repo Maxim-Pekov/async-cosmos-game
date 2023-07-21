@@ -28,6 +28,9 @@ async def fly_garbage(canvas, column, garbage_frame, obstacles, coroutines, spee
         draw_frame(canvas, row, column, garbage_frame, negative=True)
         row += speed
         obstacle.row += speed
+        if obstacle.crash:
+            obstacles.remove(obstacle)
+            return
     await asyncio.sleep(0)
 
     obstacles.remove(obstacle)

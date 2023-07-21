@@ -95,8 +95,10 @@ async def animate_spaceship(canvas, window_height, window_width):
         if space_pressed:
             coroutines.append(fire_animation.fire(
                 canvas,
+                obstacles,
                 start_row=window_height - BORDER_WIDTH - rocket_height -1,
-                start_column=rocket_col_position + rocket_width / 2 - 0.5
+                start_column=rocket_col_position + rocket_width / 2 - 0.5,
+
             ))
         await sleep(2)
         curses_tools.draw_frame(
