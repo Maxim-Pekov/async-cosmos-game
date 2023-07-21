@@ -8,9 +8,11 @@ import fire_animation, curses_tools
 from space_garbage import fly_garbage, get_random_frame
 from itertools import cycle
 from physics import update_speed
+from obstacles  import show_obstacles
 
 
 coroutines = []
+obstacles = []
 
 TIC_TIMEOUT = 5
 TIC_GARBAGE_TIMEOUT = 25
@@ -56,6 +58,7 @@ def draw_stars(canvas, window_height, window_width):
 
 
 async def animate_spaceship(canvas, window_height, window_width):
+    global coroutines
     with open("animations/rocket_frame_1.txt", "r") as my_file:
         frame1 = my_file.read()
     with open("animations/rocket_frame_2.txt", "r") as my_file:
@@ -88,6 +91,13 @@ async def animate_spaceship(canvas, window_height, window_width):
         curses_tools.draw_frame(
             canvas, rocket_row_position, rocket_col_position, rocket_frame
         )
+
+        if space_pressed:
+            coroutines.append(fire_animation.fire(
+                canvas,
+                start_row=window_height - BORDER_WIDTH - rocket_height -1,
+                start_column=rocket_col_position + rocket_width / 2 - 0.5
+            ))
         await sleep(2)
         curses_tools.draw_frame(
             canvas, rocket_row_position, rocket_col_position, rocket_frame,
@@ -103,7 +113,9 @@ async def fill_orbit_with_garbage(canvas, window_height, window_width):
         random_frame = random.choice(frames)
         frame = get_random_frame(random_frame)
         column = random.randint(BORDER_WIDTH, window_width - BORDER_WIDTH)
-        coroutines.append(fly_garbage(canvas, column, frame))
+        coroutines.append(fly_garbage(canvas, column, frame, obstacles, coroutines))
+        coroutines.append(show_obstacles(canvas, obstacles))
+
         await sleep(offset_tics)
 
 
@@ -115,13 +127,6 @@ def draw(canvas):
     window_height, window_width = canvas.getmaxyx()
 
     coroutines = draw_stars(canvas, window_height, window_width)
-    coroutines.append(
-        fire_animation.fire(
-            canvas,
-            start_row=window_height - BORDER_WIDTH,
-            start_column=window_width // 2
-        )
-    )
     coroutines.append(animate_spaceship(canvas, window_height, window_width))
     coroutines.append(fill_orbit_with_garbage(canvas, window_height, window_width))
 
