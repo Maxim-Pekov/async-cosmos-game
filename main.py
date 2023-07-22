@@ -9,10 +9,12 @@ from space_garbage import fly_garbage, get_random_frame
 from itertools import cycle
 from physics import update_speed
 from obstacles  import show_obstacles
+from show_gameover import show_game_over
 
 
 coroutines = []
 obstacles = []
+year = 1957
 
 TIC_TIMEOUT = 5
 TIC_GARBAGE_TIMEOUT = 25
@@ -105,6 +107,10 @@ async def animate_spaceship(canvas, window_height, window_width):
             canvas, rocket_row_position, rocket_col_position, rocket_frame,
             negative=True
         )
+        for obstacle in obstacles:
+            if obstacle.has_collision(rocket_row_position, rocket_col_position, rocket_height, rocket_width):
+                coroutines.append(show_game_over(canvas))
+                return
 
 async def fill_orbit_with_garbage(canvas, window_height, window_width):
     global coroutines
@@ -116,7 +122,7 @@ async def fill_orbit_with_garbage(canvas, window_height, window_width):
         frame = get_random_frame(random_frame)
         column = random.randint(BORDER_WIDTH, window_width - BORDER_WIDTH)
         coroutines.append(fly_garbage(canvas, column, frame, obstacles, coroutines))
-        coroutines.append(show_obstacles(canvas, obstacles))
+        # coroutines.append(show_obstacles(canvas, obstacles))
 
         await sleep(offset_tics)
 
