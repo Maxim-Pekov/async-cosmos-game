@@ -1,5 +1,6 @@
 from curses_tools import draw_frame, get_frame_size
 from obstacles  import Obstacle, show_obstacles
+from explosion import explode
 import asyncio
 
 
@@ -30,6 +31,7 @@ async def fly_garbage(canvas, column, garbage_frame, obstacles, coroutines, spee
         obstacle.row += speed
         if obstacle.crash:
             obstacles.remove(obstacle)
+            await explode(canvas, obstacle.row + obstacle.rows_size / 2, obstacle.column + obstacle.columns_size / 2)
             return
     await asyncio.sleep(0)
 
