@@ -8,19 +8,21 @@ import fire_animation, curses_tools
 from space_garbage import fly_garbage, get_random_frame
 from itertools import cycle
 from physics import update_speed
-from obstacles  import show_obstacles
 from show_gameover import show_game_over
+from game_scenario import count_years, show_count_years, get_garbage_delay_tics, get_year
+from obstacles import show_obstacles
 
 
 coroutines = []
 obstacles = []
-year = 1957
 
+DEBUG = False
 TIC_TIMEOUT = 5
 TIC_GARBAGE_TIMEOUT = 25
 BORDER_WIDTH = 2
 NUMBER_OF_STARS = 50
 FLICKER_BEAT = (20, 3, 5, 3)
+GUN_YEAR = 2020
 
 
 async def sleep(tics=1):
@@ -94,13 +96,12 @@ async def animate_spaceship(canvas, window_height, window_width):
             canvas, rocket_row_position, rocket_col_position, rocket_frame
         )
 
-        if space_pressed:
+        if space_pressed and get_year() > GUN_YEAR:
             coroutines.append(fire_animation.fire(
                 canvas,
                 obstacles,
                 start_row=window_height - BORDER_WIDTH - rocket_height -1,
-                start_column=rocket_col_position + rocket_width / 2 - 0.5,
-
+                start_column=rocket_col_position + rocket_width / 2 - 0.5
             ))
         await sleep(2)
         curses_tools.draw_frame(
@@ -112,34 +113,44 @@ async def animate_spaceship(canvas, window_height, window_width):
                 coroutines.append(show_game_over(canvas))
                 return
 
-async def fill_orbit_with_garbage(canvas, window_height, window_width):
+async def fill_orbit_with_garbage(canvas, window_width):
     global coroutines
-    frames = os.listdir("animations/garbages")
-    offset_tics = random.randint(10, TIC_GARBAGE_TIMEOUT)
-    while True:
 
+    frames = os.listdir("animations/garbages")
+
+    while True:
         random_frame = random.choice(frames)
         frame = get_random_frame(random_frame)
-        column = random.randint(BORDER_WIDTH, window_width - BORDER_WIDTH)
-        coroutines.append(fly_garbage(canvas, column, frame, obstacles, coroutines))
-        # coroutines.append(show_obstacles(canvas, obstacles))
-
+        if get_garbage_delay_tics():
+            column = random.randint(BORDER_WIDTH, window_width - BORDER_WIDTH)
+            offset_tics = get_garbage_delay_tics()
+        else:
+            column = None
+            offset_tics = TIC_GARBAGE_TIMEOUT
+        coroutines.append(fly_garbage(canvas, column, frame, obstacles))
+        if DEBUG:
+            coroutines.append(show_obstacles(canvas, obstacles))
         await sleep(offset_tics)
+
 
 
 def draw(canvas):
     curses.curs_set(False)
     canvas.nodelay(True)
+    canvas.derwin(5, 5)
     global coroutines
 
     window_height, window_width = canvas.getmaxyx()
 
     coroutines = draw_stars(canvas, window_height, window_width)
     coroutines.append(animate_spaceship(canvas, window_height, window_width))
-    coroutines.append(fill_orbit_with_garbage(canvas, window_height, window_width))
+    coroutines.append(count_years())
+    coroutines.append(show_count_years(canvas))
+    coroutines.append(fill_orbit_with_garbage(canvas, window_width))
 
     while True:
         canvas.border()
+
 
         for coroutine in coroutines.copy():
             try:

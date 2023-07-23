@@ -10,10 +10,11 @@ def get_random_frame(random_frame):
     return frame
 
 
-async def fly_garbage(canvas, column, garbage_frame, obstacles, coroutines, speed=0.5):
+async def fly_garbage(canvas, column, garbage_frame, obstacles, speed=0.5):
     """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
     rows_number, columns_number = canvas.getmaxyx()
-
+    if column == None:
+        return
     column = max(column, 0)
     column = min(column, columns_number - 1)
 

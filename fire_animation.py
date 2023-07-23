@@ -1,13 +1,18 @@
 import asyncio
 import curses
-from obstacles  import Obstacle
 
+
+hits = 0
+
+def get_hits():
+    return hits
 
 async def fire(canvas, obstacles, start_row, start_column, rows_speed=-0.5,
                columns_speed=0):
     """Display animation of gun shot, direction and speed can be specified."""
 
     row, column = start_row, start_column
+    global hits
 
     canvas.addstr(round(row), round(column), '*')
     await asyncio.sleep(0)
@@ -37,5 +42,5 @@ async def fire(canvas, obstacles, start_row, start_column, rows_speed=-0.5,
         for obstacle in obstacles:
             if obstacle.has_collision(row, column):
                 obstacle.crash = True
-                # obstacles_in_last_collision.append(obstacle)
+                hits += 1
                 return

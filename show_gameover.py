@@ -1,6 +1,7 @@
 import asyncio
 
 from curses_tools import draw_frame, get_frame_size
+from fire_animation import get_hits
 
 
 async def show_game_over(canvas):
@@ -13,6 +14,7 @@ async def show_game_over(canvas):
     frame_height, frame_width = get_frame_size(frame_game_over)
     while True:
         draw_frame(canvas, rows_number / 2 - frame_height / 2, columns_number / 2 - frame_width / 2, frame_game_over)
+        draw_frame(canvas, rows_number / 2 + frame_height / 2, columns_number / 2 - 6, f'YOUR SCORE: {get_hits()}')
 
         await asyncio.sleep(0)
 
