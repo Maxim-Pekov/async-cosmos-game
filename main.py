@@ -72,7 +72,7 @@ async def animate_spaceship(canvas, window_height, window_width):
     rocket_row_position = window_height - rocket_height - BORDER_WIDTH
     rocket_col_position = (window_width // 2) - BORDER_WIDTH
 
-    for rocket_frame in cycle([frame1, frame2]):
+    for rocket_frame in cycle([frame1, frame1, frame2, frame2]):
         rows_direction, columns_direction, space_pressed = curses_tools.read_controls(
             canvas)
 
@@ -95,6 +95,11 @@ async def animate_spaceship(canvas, window_height, window_width):
         curses_tools.draw_frame(
             canvas, rocket_row_position, rocket_col_position, rocket_frame
         )
+        await sleep(1)
+        curses_tools.draw_frame(
+            canvas, rocket_row_position, rocket_col_position, rocket_frame,
+            negative=True
+        )
 
         if space_pressed and get_year() > GUN_YEAR:
             coroutines.append(fire_animation.fire(
@@ -103,11 +108,7 @@ async def animate_spaceship(canvas, window_height, window_width):
                 start_row=window_height - BORDER_WIDTH - rocket_height -1,
                 start_column=rocket_col_position + rocket_width / 2 - 0.5
             ))
-        await sleep(2)
-        curses_tools.draw_frame(
-            canvas, rocket_row_position, rocket_col_position, rocket_frame,
-            negative=True
-        )
+
         for obstacle in obstacles:
             if obstacle.has_collision(rocket_row_position, rocket_col_position, rocket_height, rocket_width):
                 coroutines.append(show_game_over(canvas))
@@ -157,8 +158,8 @@ def draw(canvas):
                 coroutine.send(None)
             except StopIteration:
                 coroutines.remove(coroutine)
-            time.sleep(0.001)
         canvas.refresh()
+        time.sleep(0.05)
 
 
 def main():
